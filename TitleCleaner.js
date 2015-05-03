@@ -11,7 +11,7 @@ function WizAlert(msg)
 
 function Write2Text()
 {
-	var fso = new ActiveXObject("Scripting.FileSystemObject");
+	var fso = objApp.CreateActiveXObject("Scripting.FileSystemObject");
 	var f = fso.CreateTextFile("BlackList.txt", true);
 	for(var i=0;i<arr.length;i++)
 	{
@@ -24,7 +24,7 @@ function Write2Text()
 function GetHeader(src) 
 { 
 	var ForReading=1; 
-	var fso=new ActiveXObject("Scripting.FileSystemObject");
+	var fso=objApp.CreateActiveXObject("Scripting.FileSystemObject");
 	var f = fso.OpenTextFile(src, ForReading, true); 
 	return (f.ReadAll()); 
 } 
