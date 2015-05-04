@@ -1,13 +1,13 @@
 var TitleCleaner_pluginPath = objApp.GetPluginPathByScriptFileName("TitleCleaner.js");
 
-function GetHeader(src)
+function TitleCleaner_GetHeader(src)
 {
     return objCommon.LoadTextFromFile(src);
 }
 
-function ReadText()
+function TitleCleaner_ReadText()
 {
-    var arr = GetHeader(TitleCleaner_pluginPath + "BlackList.txt").split("\n");
+    var arr = TitleCleaner_GetHeader(TitleCleaner_pluginPath + "BlackList.txt").split("\n");
 
     for (var i = 0; i < arr.length; i++)
     {
@@ -18,7 +18,7 @@ function ReadText()
         }
         else
         {
-            var arrBL = splitBlackListItem(arr[i]);
+            var arrBL = TitleCleaner_splitBlackListItem(arr[i]);
 
             if (arrBL.length == 1)
             {
@@ -34,7 +34,7 @@ function ReadText()
     }
 }
 
-function splitBlackListItem(BLI)
+function TitleCleaner_splitBlackListItem(BLI)
 {
     var arrBLSP = new Array();
     arrBLSP = BLI.split('^^');
@@ -50,7 +50,7 @@ function InitTitleCleanerButton()
 
 function OnTitleCleanerButtonClicked()
 {
-    ReadText();
+    TitleCleaner_ReadText();
 }
 
 InitTitleCleanerButton();
