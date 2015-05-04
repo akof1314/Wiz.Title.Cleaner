@@ -45,7 +45,7 @@ function InitTitleCleanerButton()
 {
     var languangeFileName = TitleCleaner_pluginPath + "plugin.ini";
     var buttonText = objApp.LoadStringFromFile(languangeFileName, "strBtnName");
-    objWindow.AddToolButton("document", "TitleCleanerButton", buttonText, "", "OnTitleCleanerButtonClicked");
+    objWindow.AddToolButton("document", "TitleCleanerButton", buttonText, TitleCleaner_pluginPath + "TitleCleaner.ico", "OnTitleCleanerButtonClicked");
 }
 
 function OnTitleCleanerButtonClicked()
