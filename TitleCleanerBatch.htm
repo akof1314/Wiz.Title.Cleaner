@@ -9,6 +9,9 @@
 	<SCRIPT type="text/javascript">
 		<!--
 		var setting = {
+			view: {
+				nameIsHTML: true
+			}
 		};
 
 		var zNodes =[
@@ -19,13 +22,17 @@
 		var objCommon = null;
 		var objDatabase = null;
 		var objWindow = null;
-		var TitleCleaner_pluginPath = "";
+		var strPluginPath = "";
+		var strBlackListPath = "";
+		var arrBlackList = null;
 
 		$(document).ready(function(){
-			TitleCleaner_pluginPath = objApp.GetPluginPathByScriptFileName("TitleCleaner.js");
+			strPluginPath = objApp.GetPluginPathByScriptFileName("TitleCleaner.js");
+			strBlackListPath = strPluginPath + "BlackList.txt";
 			objCommon = objApp.CreateWizObject("WizKMControls.WizCommonUI");
 			objDatabase = objApp.Database;
 			objWindow = objApp.Window;
+			$("#rulenameBlackList").val(strBlackListPath);
 		});
 
 		function TitleCleaner_GetHeader(src)
@@ -70,10 +77,12 @@
 		}
 
 		function previewTitleCleaner () {
+			getBlackList();
 			zNodes = [];
 			addChildDocs(objDatabase, zNodes);
 
 			zTreeObj = $.fn.zTree.init($("#treeDemo"), setting, zNodes);
+			$("#buttonDo").removeAttr("disabled");
 		}
 
 		function doTitleCleaner () {
@@ -82,29 +91,54 @@
 
 		function addChildDocs(parentFolder, parentNode) {
 			var childrenFolders = parentFolder.Folders;
-			var childrenDocs = parentFolder.Documents;
-			if (childrenDocs){
-				for (var i = 0; i < childrenDocs.Count; i++) {
-					parentNode.push({name:childrenDocs.Item(i).Title,
-					 icon:getIconFileRealPath(childrenDocs.Item(i).GetIconFileName())});
-				}
-			}
 			if (childrenFolders){
 				for (var i = 0; i < childrenFolders.Count; i++) {
 					var childrenFolder = childrenFolders.Item(i);
 
 					var childrenNode = [];
-					parentNode.push({name:childrenFolder.GetDisplayName(0),
-					  icon:getIconFileRealPath(childrenFolder.GetIconFileName()),
-					  open:true,
-					  children:childrenNode});
-					addChildDocs(childrenFolder, childrenNode);
+					if (addChildDocs(childrenFolder, childrenNode)) {
+						parentNode.push({name:childrenFolder.GetDisplayName(0),
+						  icon:getIconFileRealPath(childrenFolder.GetIconFileName()),
+						  open:true,
+						  children:childrenNode});
+					}
 				}
 			}
+
+			var childrenDocs = parentFolder.Documents;
+			if (childrenDocs){
+				for (var i = 0; i < childrenDocs.Count; i++) {
+					var childrenDoc = childrenDocs.Item(i);
+					var childrenDocTitle = childrenDoc.Title;
+
+					for (var j = 0; j < arrBlackList.length; j++) {
+						if (new RegExp(arrBlackList[j][0], "gmi").test(childrenDocTitle) == true) {
+							parentNode.push({name:"<span style='color:blue;margin-right:0px;'>" + childrenDocTitle + "</span>",
+							 icon:getIconFileRealPath(childrenDoc.GetIconFileName())});
+
+							break;
+						}
+					};
+				}
+			}
+			return parentNode.length > 0;
 		}
 
 		function getIconFileRealPath (fileName) {
 			return fileName.replace(/\\/g, "/").replace(/ /g, "%20");
+		}
+
+		function getBlackList () {
+			arrBlackList = [];
+			var arrList = objCommon.LoadTextFromFile(strBlackListPath).split("\n");
+			for (var i = 0; i < arrList.length; i++) {
+				var arrItem = arrList[i].split('^^');
+				if (arrItem.length == 1) {
+					arrItem.push("");
+				};
+
+				arrBlackList.push(arrItem);
+			};
 		}
 
 		//-->
@@ -114,11 +148,11 @@
 	<table style="width:100%;height:100%;table-layout:fixed;padding: 10px;">
         <tr>
 			<td colspan="2" >
-				规则文件: <input type="text" readonly="true" name="rulename" style="width:70%;"/>
+				规则文件: <input id="rulenameBlackList" type="text" readonly="true" name="rulename" style="width:70%;"/>
 			</td>
             <td align="right">
-				<input id="buttonOK" type="button" value="预览" onclick="previewTitleCleaner();" style="width: 70px; padding-top:3px;" />
-				<input id="buttonCancel" type="button" value="清理" onclick="doTitleCleaner();" style="width: 70px; padding-top:3px;" />
+				<input id="buttonPreview" type="button" value="预览" onclick="previewTitleCleaner();" style="width: 70px; padding-top:3px;" />
+				<input id="buttonDo" type="button" disabled="disabled" value="清理" onclick="doTitleCleaner();" style="width: 70px; padding-top:3px;" />
 			</td>
         </tr>
 		<tr>
