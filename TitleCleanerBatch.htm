@@ -10,7 +10,7 @@
 		<!--
 		var setting = {
 			view: {
-				nameIsHTML: true
+				fontCss: getTreeNodeFont
 			}
 		};
 
@@ -24,57 +24,18 @@
 		var objWindow = null;
 		var strPluginPath = "";
 		var strBlackListPath = "";
+		var strLanguangePath = "";
 		var arrBlackList = null;
 
 		$(document).ready(function(){
 			strPluginPath = objApp.GetPluginPathByScriptFileName("TitleCleaner.js");
 			strBlackListPath = strPluginPath + "BlackList.txt";
+			strLanguangePath = strPluginPath + "plugin.ini";
 			objCommon = objApp.CreateWizObject("WizKMControls.WizCommonUI");
 			objDatabase = objApp.Database;
 			objWindow = objApp.Window;
 			$("#rulenameBlackList").val(strBlackListPath);
 		});
-
-		function TitleCleaner_GetHeader(src)
-		{
-		    return objCommon.LoadTextFromFile(src);
-		}
-
-		function TitleCleaner_ReadText()
-		{
-		    var arr = TitleCleaner_GetHeader(TitleCleaner_pluginPath + "BlackList.txt").split("\n");
-
-		    for (var i = 0; i < arr.length; i++)
-		    {
-		        var objDoc = objWindow.CurrentDocument;
-		        if (objDoc == null)
-		        {
-		            return;
-		        }
-		        else
-		        {
-		            var arrBL = TitleCleaner_splitBlackListItem(arr[i]);
-
-		            if (arrBL.length == 1)
-		            {
-		                var reg = new RegExp(arrBL[0], "gmi");
-		                objDoc.Title = objDoc.Title.replace(reg, "");
-		            }
-		            else
-		            {
-		                var reg = new RegExp(arrBL[0], "gmi");
-		                objDoc.Title = objDoc.Title.replace(reg, arrBL[1]);
-		            }
-		        }
-		    }
-		}
-
-		function TitleCleaner_splitBlackListItem(BLI)
-		{
-		    var arrBLSP = new Array();
-		    arrBLSP = BLI.split('^^');
-		    return arrBLSP;
-		}
 
 		function previewTitleCleaner () {
 			getBlackList();
@@ -86,7 +47,33 @@
 		}
 
 		function doTitleCleaner () {
-			console.log(TitleCleaner_pluginPath);
+			if (zNodes.length == 0 || zTreeObj == null) {
+				objWindow.ShowMessage(objApp.LoadStringFromFile(strLanguangePath, "strNoNeedCleanerName"), "{p}", 0x00000040);
+				return;
+			};
+
+			if (6 != objWindow.ShowMessage(objApp.LoadStringFromFile(strLanguangePath, "strSureDoCleanerName"), "{p}", 0x04 + 0x20)) {
+                return;
+            }
+
+            var modifyOk = false;
+            var nodesDoc = zTreeObj.getNodesByParam("wizTitle", true, null);
+            if (nodesDoc) {
+            	for (var i = 0; i < nodesDoc.length; i++) {
+            		var objDocument = objDatabase.DocumentFromGUID(nodesDoc[i]["wizGUID"]);
+            		if (objDocument) {
+            			objDocument.Title = nodesDoc[i]["name"];
+            			modifyOk = true;
+            		};
+            	};
+            };
+
+            if (modifyOk) {
+				objWindow.ShowMessage(objApp.LoadStringFromFile(strLanguangePath, "strDoCleanerOKName"), "{p}", 0x00000040);
+				previewTitleCleaner();
+            } else{
+				objWindow.ShowMessage(objApp.LoadStringFromFile(strLanguangePath, "strDoCleanerFailedName"), "{p}", 0x00000040);
+            };
 		}
 
 		function addChildDocs(parentFolder, parentNode) {
@@ -97,10 +84,12 @@
 
 					var childrenNode = [];
 					if (addChildDocs(childrenFolder, childrenNode)) {
-						parentNode.push({name:childrenFolder.GetDisplayName(0),
-						  icon:getIconFileRealPath(childrenFolder.GetIconFileName()),
-						  open:true,
-						  children:childrenNode});
+						parentNode.push({
+							name:childrenFolder.GetDisplayName(0),
+						  	icon:getIconFileRealPath(childrenFolder.GetIconFileName()),
+						  	open:true,
+						  	children:childrenNode
+						});
 					}
 				}
 			}
@@ -112,16 +101,30 @@
 					var childrenDocTitle = childrenDoc.Title;
 
 					for (var j = 0; j < arrBlackList.length; j++) {
-						if (new RegExp(arrBlackList[j][0], "gmi").test(childrenDocTitle) == true) {
-							parentNode.push({name:"<span style='color:blue;margin-right:0px;'>" + childrenDocTitle + "</span>",
-							 icon:getIconFileRealPath(childrenDoc.GetIconFileName())});
+						childrenDocTitle = childrenDocTitle.replace(new RegExp(arrBlackList[j][0], "gi"), arrBlackList[j][1]);
+					};
 
-							break;
-						}
+					if (childrenDocTitle != childrenDoc.Title) {
+						parentNode.push({
+							name:childrenDoc.Title,
+							icon:getIconFileRealPath(childrenDoc.GetIconFileName())
+						});
+
+						parentNode.push({
+							name:childrenDocTitle,
+							font:{'color':'blue'},
+							iconSkin:"newtitle",
+							wizGUID:childrenDoc.GUID,
+							wizTitle:true
+						});
 					};
 				}
 			}
 			return parentNode.length > 0;
+		}
+
+		function getTreeNodeFont(treeId, node) {
+			return node.font ? node.font : {};
 		}
 
 		function getIconFileRealPath (fileName) {
@@ -143,6 +146,9 @@
 
 		//-->
 	</SCRIPT>
+	<style type="text/css">
+		.ztree li span.button.newtitle_ico_docu{margin-right:2px; background-position:-126px -48px; vertical-align:top; *vertical-align:middle}
+	</style>
     </htad>
     <body>
 	<table style="width:100%;height:100%;table-layout:fixed;padding: 10px;">
