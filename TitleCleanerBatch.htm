@@ -25,6 +25,7 @@
 		var strPluginPath = "";
 		var strBlackListPath = "";
 		var strLanguangePath = "";
+		var strUnnamedName = "";
 		var arrBlackList = null;
 
 		$(document).ready(function(){
@@ -34,6 +35,8 @@
 			objCommon = objApp.CreateWizObject("WizKMControls.WizCommonUI");
 			objDatabase = objApp.Database;
 			objWindow = objApp.Window;
+			objApp.LocalizeHtmlDocument(strLanguangePath, document);
+			strUnnamedName = objApp.LoadStringFromFile(strLanguangePath, "strUnnamedName");
 			$("#rulenameBlackList").val(strBlackListPath);
 		});
 
@@ -113,6 +116,10 @@
 					};
 
 					if (childrenDocTitle != childrenDoc.Title) {
+						if ($.trim(childrenDocTitle) == "") {
+							childrenDocTitle = strUnnamedName;
+						};
+
 						parentNode.push({
 							name:childrenDoc.Title,
 							icon:getIconFileRealPath(childrenDoc.GetIconFileName())
@@ -172,11 +179,11 @@
 	<table style="width:100%;height:100%;table-layout:fixed;padding: 10px;">
         <tr>
 			<td colspan="2" >
-				规则文件: <input id="rulenameBlackList" type="text" readonly="true" name="rulename" style="width:70%;"/>
+				<span id="labelRulename">Rule file:</span><input id="rulenameBlackList" type="text" readonly="true" name="rulename" style="width:70%;"/>
 			</td>
             <td align="right">
-				<input id="buttonPreview" type="button" value="预览" onclick="previewTitleCleaner();" style="width: 70px; padding-top:3px;" />
-				<input id="buttonDo" type="button" disabled="disabled" value="清理" onclick="doTitleCleaner();" style="width: 70px; padding-top:3px;" />
+				<input id="buttonPreview" type="button" value="Preview" onclick="previewTitleCleaner();" style="width: 70px; padding-top:3px;" />
+				<input id="buttonDo" type="button" disabled="disabled" value="Clear" onclick="doTitleCleaner();" style="width: 70px; padding-top:3px;" />
 			</td>
         </tr>
 		<tr>
