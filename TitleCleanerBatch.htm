@@ -38,12 +38,16 @@
 		});
 
 		function previewTitleCleaner () {
-			getBlackList();
-			zNodes = [];
-			addChildDocs(objDatabase, zNodes);
+			setMaskImg(true);
+			setTimeout(function () {
+				getBlackList();
+				zNodes = [];
+				addChildDocs(objDatabase, zNodes);
 
-			zTreeObj = $.fn.zTree.init($("#treeDemo"), setting, zNodes);
-			$("#buttonDo").removeAttr("disabled");
+				zTreeObj = $.fn.zTree.init($("#treeDemo"), setting, zNodes);
+				$("#buttonDo").removeAttr("disabled");
+				setMaskImg(false);
+			}, 10);
 		}
 
 		function doTitleCleaner () {
@@ -56,24 +60,28 @@
                 return;
             }
 
-            var modifyOk = false;
-            var nodesDoc = zTreeObj.getNodesByParam("wizTitle", true, null);
-            if (nodesDoc) {
-            	for (var i = 0; i < nodesDoc.length; i++) {
-            		var objDocument = objDatabase.DocumentFromGUID(nodesDoc[i]["wizGUID"]);
-            		if (objDocument) {
-            			objDocument.Title = nodesDoc[i]["name"];
-            			modifyOk = true;
-            		};
-            	};
-            };
+			setMaskImg(true);
+			setTimeout(function () {
+	            var modifyOk = false;
+	            var nodesDoc = zTreeObj.getNodesByParam("wizTitle", true, null);
+	            if (nodesDoc) {
+	            	for (var i = 0; i < nodesDoc.length; i++) {
+	            		var objDocument = objDatabase.DocumentFromGUID(nodesDoc[i]["wizGUID"]);
+	            		if (objDocument) {
+	            			objDocument.Title = nodesDoc[i]["name"];
+	            			modifyOk = true;
+	            		};
+	            	};
+	            };
+				setMaskImg(false);
 
-            if (modifyOk) {
-				objWindow.ShowMessage(objApp.LoadStringFromFile(strLanguangePath, "strDoCleanerOKName"), "{p}", 0x00000040);
-				previewTitleCleaner();
-            } else{
-				objWindow.ShowMessage(objApp.LoadStringFromFile(strLanguangePath, "strDoCleanerFailedName"), "{p}", 0x00000040);
-            };
+	            if (modifyOk) {
+					objWindow.ShowMessage(objApp.LoadStringFromFile(strLanguangePath, "strDoCleanerOKName"), "{p}", 0x00000040);
+					previewTitleCleaner();
+	            } else{
+					objWindow.ShowMessage(objApp.LoadStringFromFile(strLanguangePath, "strDoCleanerFailedName"), "{p}", 0x00000040);
+	            };
+			}, 10);
 		}
 
 		function addChildDocs(parentFolder, parentNode) {
@@ -144,6 +152,16 @@
 			};
 		}
 
+		function setMaskImg (show) {
+			if (show) {
+				$("#maskColor").show();
+				$("#maskImg").show();
+			} else{
+				$("#maskColor").hide();
+				$("#maskImg").hide();
+			};
+		}
+
 		//-->
 	</SCRIPT>
 	<style type="text/css">
@@ -151,7 +169,6 @@
 	</style>
     </htad>
     <body>
-    <!-- <div style="width:100%;height:100%;display:block;background:url(zTree/css/zTreeStyle/img/loading.gif) center center no-repeat;"></div> -->
 	<table style="width:100%;height:100%;table-layout:fixed;padding: 10px;">
         <tr>
 			<td colspan="2" >
@@ -168,5 +185,7 @@
             </td>
         </tr>
     </table>
+    <div id="maskColor" style="position:absolute;left:0px;top:0px;width:100%;height:100%;display:none;background-color:gray;opacity:0.5;"></div>
+    <img id="maskImg" src="zTree/css/zTreeStyle/img/loading@2x.gif" style="position:absolute;left:50%;top:50%;width:64px;height:64px;display:none;margin-left:-32px;margin-top:-32px;">
     </body>
 </html>
