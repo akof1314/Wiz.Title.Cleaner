@@ -26,15 +26,13 @@
 
 #### 使用方法
 
-- 单个清理
-在浏览文章的时候，点击右上角的 ![](https://github.com/akof1314/Wiz.Title.Cleaner/raw/master/TitleCleaner.ico) 图标即可。
+- **单个清理**：在浏览文章的时候，点击右上角的 ![](https://github.com/akof1314/Wiz.Title.Cleaner/raw/master/TitleCleaner.ico) 图标即可。
 
-- [批量清理](https://github.com/akof1314/Wiz.Title.Cleaner/wiki/How-To-Batch-Clear "批量清理")
-通过`菜单栏`→`工具`→`标题批量清理...`来打开批量清理界面，进行`预览`、`清理`操作。
+- **[批量清理](https://github.com/akof1314/Wiz.Title.Cleaner/wiki/How-To-Batch-Clear "批量清理")**：通过`菜单栏`→`工具`→`标题批量清理...`来打开批量清理界面，进行`预览`、`清理`操作。
 
 #### 配置方法
 
 打开插件目录下的`BlackList.txt`文件，自定义里面的黑名单内容，按行隔开。若是要自定义替换的内容，则用`^^`将被替换内容和替换为的内容隔开。
 
 #### 常用黑名单
-便于收集和通用，在这个[帖子](https://github.com/akof1314/Wiz.Title.Cleaner/issues/1 "帖子")进行收集常用的黑名单词组。
+为了便于收集和通用，在这个**[帖子](https://github.com/akof1314/Wiz.Title.Cleaner/issues/1 "帖子")**进行收集常用的黑名单词组。
