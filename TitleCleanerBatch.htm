@@ -1,8 +1,8 @@
 <html>
 <head>
-    <title>Title Cleaner Batch</title>
+	<title>Title Cleaner Batch</title>
 	<meta http-equiv="content-type" content="text/html; charset=UTF-8">
-    <link rel="stylesheet" href="zTree/css/demo.css" type="text/css">
+	<link rel="stylesheet" href="zTree/css/demo.css" type="text/css">
 	<link rel="stylesheet" href="zTree/css/zTreeStyle/zTreeStyle.css" type="text/css">
 	<script type="text/javascript" src="zTree/js/jquery-1.4.4.min.js"></script>
 	<script type="text/javascript" src="zTree/js/jquery.ztree.core-3.5.min.js"></script>
@@ -40,6 +40,10 @@
 			$("#rulenameBlackList").val(strBlackListPath);
 		});
 
+		function openBlackList () {
+			objCommon.RunExe("Notepad.exe", strBlackListPath, false);
+		}
+
 		function previewTitleCleaner () {
 			setMaskImg(true);
 			setTimeout(function () {
@@ -60,30 +64,30 @@
 			};
 
 			if (6 != objWindow.ShowMessage(objApp.LoadStringFromFile(strLanguangePath, "strSureDoCleanerName"), "{p}", 0x04 + 0x20)) {
-                return;
-            }
+				return;
+			}
 
 			setMaskImg(true);
 			setTimeout(function () {
-	            var modifyOk = false;
-	            var nodesDoc = zTreeObj.getNodesByParam("wizTitle", true, null);
-	            if (nodesDoc) {
-	            	for (var i = 0; i < nodesDoc.length; i++) {
-	            		var objDocument = objDatabase.DocumentFromGUID(nodesDoc[i]["wizGUID"]);
-	            		if (objDocument) {
-	            			objDocument.Title = nodesDoc[i]["name"];
-	            			modifyOk = true;
-	            		};
-	            	};
-	            };
+				var modifyOk = false;
+				var nodesDoc = zTreeObj.getNodesByParam("wizTitle", true, null);
+				if (nodesDoc) {
+					for (var i = 0; i < nodesDoc.length; i++) {
+						var objDocument = objDatabase.DocumentFromGUID(nodesDoc[i]["wizGUID"]);
+						if (objDocument) {
+							objDocument.Title = nodesDoc[i]["name"];
+							modifyOk = true;
+						};
+					};
+				};
 				setMaskImg(false);
 
-	            if (modifyOk) {
+				if (modifyOk) {
 					objWindow.ShowMessage(objApp.LoadStringFromFile(strLanguangePath, "strDoCleanerOKName"), "{p}", 0x00000040);
 					previewTitleCleaner();
-	            } else{
+				} else{
 					objWindow.ShowMessage(objApp.LoadStringFromFile(strLanguangePath, "strDoCleanerFailedName"), "{p}", 0x00000040);
-	            };
+				};
 			}, 10);
 		}
 
@@ -97,9 +101,9 @@
 					if (addChildDocs(childrenFolder, childrenNode)) {
 						parentNode.push({
 							name:childrenFolder.GetDisplayName(0),
-						  	icon:getIconFileRealPath(childrenFolder.GetIconFileName()),
-						  	open:true,
-						  	children:childrenNode
+							icon:getIconFileRealPath(childrenFolder.GetIconFileName()),
+							open:true,
+							children:childrenNode
 						});
 					}
 				}
@@ -174,25 +178,26 @@
 	<style type="text/css">
 		.ztree li span.button.newtitle_ico_docu{margin-right:2px; background-position:-126px -48px; vertical-align:top; *vertical-align:middle}
 	</style>
-    </htad>
-    <body>
+	</htad>
+	<body>
 	<table style="width:100%;height:100%;table-layout:fixed;padding: 10px;">
-        <tr>
+		<tr>
 			<td colspan="2" >
-				<span id="labelRulename">Rule file:</span><input id="rulenameBlackList" type="text" readonly="true" name="rulename" style="width:70%;"/>
+				<span id="labelRulename">Rule file:</span><input id="rulenameBlackList" type="text" readonly="true" name="rulename" dir="rtl" style="width:70%;"/>
+				<input id="buttonOpen" type="button" value="..." onclick="openBlackList();" style="width: 25px; padding-top:3px;margin-left:-3px;" />
 			</td>
-            <td align="right">
+			<td align="right">
 				<input id="buttonPreview" type="button" value="Preview" onclick="previewTitleCleaner();" style="width: 70px; padding-top:3px;" />
 				<input id="buttonDo" type="button" disabled="disabled" value="Clear" onclick="doTitleCleaner();" style="width: 70px; padding-top:3px;" />
 			</td>
-        </tr>
+		</tr>
 		<tr>
-            <td colspan="3" style="width:100%;height:100%;">
+			<td colspan="3" style="width:100%;height:100%;">
 				<ul id="treeDemo" class="ztree"></ul>
-            </td>
-        </tr>
-    </table>
-    <div id="maskColor" style="position:absolute;left:0px;top:0px;width:100%;height:100%;display:none;background-color:gray;opacity:0.5;"></div>
-    <img id="maskImg" src="zTree/css/zTreeStyle/img/loading@2x.gif" style="position:absolute;left:50%;top:50%;width:64px;height:64px;display:none;margin-left:-32px;margin-top:-32px;">
-    </body>
+			</td>
+		</tr>
+	</table>
+	<div id="maskColor" style="position:absolute;left:0px;top:0px;width:100%;height:100%;display:none;background-color:gray;opacity:0.5;"></div>
+	<img id="maskImg" src="zTree/css/zTreeStyle/img/loading@2x.gif" style="position:absolute;left:50%;top:50%;width:64px;height:64px;display:none;margin-left:-32px;margin-top:-32px;">
+	</body>
 </html>
