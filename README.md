@@ -1,4 +1,4 @@
-# Wiz.Title.Cleaner
+﻿# Wiz.Title.Cleaner
 
 ![](https://github.com/akof1314/Wiz.Title.Cleaner/raw/master/logo.png)
 
@@ -7,7 +7,7 @@
 **Wiz.Title.Cleaner** 是一个支持正则的为知笔记文章标题清理插件。
 
 #### 当前版本
-1.4
+1.5
 
 #### 版本说明
 基于[为知笔记论坛](http://bbs.wiz.cn/thread-6766-1-1.html)的版本，版本号为1.2。
